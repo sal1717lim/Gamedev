@@ -1,10 +1,10 @@
 # Gamedev
 projet Game Design &amp; Development
 Travail à réaliser moyennant la plateforme Phaser. Les sprites et tuilles sont laissés au
-choix de l’étudiant.\\
+choix de l’étudiant.\n
 1- Créer une scène de jeu 2D comme indiqué par la figure 1 où les players
 (voitures) sont des sprites se déplaçant sur les routes et dont les vitesses de
-mouvement est aléatoire. Les voitures circulent sans arrêt sur la route.\\
+mouvement est aléatoire. Les voitures circulent sans arrêt sur la route.\n
 2- Associer les propriétés physiques au players (joueurs) de telle sorte qu’en cas de
 recouvrement, il y aura collision et arrêt du mouvement (voir figure 2).
 3- Proposer des règles de circulation des players (au niveau des intersections) et
