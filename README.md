@@ -2,6 +2,8 @@
 projet Game Design &amp; Development
 Travail à réaliser moyennant la plateforme Phaser. Les sprites et tuilles sont laissés au
 choix de l’étudiant.
+
+
 1- Créer une scène de jeu 2D comme indiqué par la figure 1 où les players (voitures) sont des sprites se déplaçant sur les routes et dont les vitesses de mouvement est aléatoire. Les voitures circulent sans arrêt sur la route.
 
 
