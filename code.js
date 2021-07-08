@@ -101,7 +101,13 @@ function preload ()
     this.load.spritesheet("police","assets\\police.png",{ frameWidth:16, frameHeight: 35 });
 }
 function create ()
-{   trotoire=this.physics.add.staticGroup();
+{   
+    {/*CREATION DES SPRITE ET DES TILES*/
+
+
+
+    
+    trotoire=this.physics.add.staticGroup();
     
     routeH=this.physics.add.staticGroup();
 
@@ -170,6 +176,57 @@ function create ()
         }
     
     
+    
+    }
+    {/* verification du recouvrement*/
+        this.physics.add.overlap(car.objet, car2.objet, function(){
+            this.physics.pause();
+        }, null, this);  
+        this.physics.add.overlap(car.objet, ambulance.objet, function(){
+            this.physics.pause();
+        }, null, this);  
+        this.physics.add.overlap(car.objet, taxi.objet, function(){
+            this.physics.pause();
+        }, null, this);  
+        this.physics.add.overlap(car.objet, police.objet, function(){
+            this.physics.pause();
+        }, null, this);  
+        this.physics.add.overlap(car.objet, truck.objet, function(){
+            this.physics.pause();
+        }, null, this);  
+        this.physics.add.overlap(car2.objet, ambulance.objet, function(){
+            this.physics.pause();
+        }, null, this);  
+        this.physics.add.overlap(car2.objet,taxi.objet, function(){
+            this.physics.pause();
+        }, null, this);  
+        this.physics.add.overlap(car2.objet, police.objet, function(){
+            this.physics.pause();
+        }, null, this);  
+        this.physics.add.overlap(car2.objet, truck.objet, function(){
+            this.physics.pause();
+        }, null, this);
+        this.physics.add.overlap(ambulance.objet,taxi.objet, function(){
+            this.physics.pause();
+        }, null, this);  
+        this.physics.add.overlap(ambulance.objet,police.objet, function(){
+            this.physics.pause();
+        }, null, this);  
+        this.physics.add.overlap(ambulance.objet,truck.objet, function(){
+            this.physics.pause();
+        }, null, this);  
+        this.physics.add.overlap(taxi.objet,police.objet, function(){
+            this.physics.pause();
+        }, null, this);  
+        this.physics.add.overlap(taxi.objet,truck.objet, function(){
+            this.physics.pause();
+        }, null, this);  
+        this.physics.add.overlap(police.objet,truck.objet, function(){
+            this.physics.pause();
+        }, null, this);  
+
+        
+}
 }
 function update ()
 {  ambulance.objet.anims.play('ambulance', true);
