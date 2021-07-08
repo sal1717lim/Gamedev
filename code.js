@@ -6,7 +6,7 @@ var config = {
         default: 'arcade',
         arcade: {
             
-            debug: true
+            debug: false
         }
     },
     scene: {
@@ -63,8 +63,16 @@ var police={
     objet:null,
     positionX:44+11*64,
     positionY:32+9*64,
-    directiony:-10+-Math.floor(Math.random() * 300),
+    directiony:-100+-Math.floor(Math.random() * 300),
     directionx:0,
+    valeur:null
+}
+var taxi={
+    objet:null,
+    positionX:44+11*64,
+    positionY:44+6*64,
+    directiony:0,
+    directionx:-100+-Math.floor(Math.random() * 300),
     valeur:null
 }
 var truck={
@@ -86,6 +94,7 @@ function preload ()
     this.load.image('virageDB', 'assets\\virageDB.jpg'); 
     this.load.image("car","assets\\car.png")
     this.load.image("truck","assets\\truck.png")
+    this.load.image("taxi","assets\\taxi.png")
     this.load.image("croisement4","assets\\croisement4.jpg")
     this.load.image("croisement3bas","assets\\croisement3bas.jpg")
     this.load.spritesheet("ambulance","assets\\ambulance.png",{ frameWidth: 24, frameHeight: 24 });
@@ -123,6 +132,10 @@ function create ()
         truck.objet.allowRotation=true
         truck.objet.angle=-90
         truck.objet.setVelocity(truck.directionx,truck.directiony)
+        taxi.objet=this.physics.add.sprite(taxi.positionX,taxi.positionY,"taxi")
+        taxi.objet.allowRotation=true
+        
+        taxi.objet.setVelocity(taxi.directionx,taxi.directiony)
         police.objet=this.physics.add.sprite(police.positionX,police.positionY,"police")
         police.objet.allowRotation=true
         police.objet.setVelocity(police.directionx,police.directiony)
@@ -188,5 +201,10 @@ if(ambulance.objet.body.checkWorldBounds()){
             truck.objet.setVelocity(truck.directionx,truck.directiony)
             truck.objet.angle+=180
             }
+            if(taxi.objet.body.checkWorldBounds()){
+                taxi.directionx=-taxi.directionx
+                taxi.objet.setVelocity(taxi.directionx,taxi.directiony)
+                taxi.objet.angle+=180
+                }
    
 }
