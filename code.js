@@ -18,16 +18,16 @@ var config = {
 
 var game = new Phaser.Game(config);
 var map=[
-         [1,1,1,1,1,1,3,1,1,1,1,3,1,1,1],
-         [2,2,2,2,2,2,5,2,2,2,2,5,2,2,2],
-         [1,1,1,1,1,1,3,1,1,1,1,3,1,1,1],
-         [2,2,2,2,2,2,5,2,2,2,2,5,2,2,2],
-         [1,1,1,1,1,1,3,1,1,1,1,3,1,1,1],
-         [1,1,1,1,1,1,3,1,1,1,1,3,1,1,1],
-         [2,2,2,2,2,2,5,2,2,2,2,5,2,2,2],
-         [1,1,1,1,1,1,3,1,1,1,1,3,1,1,1],
-         [1,1,1,1,1,1,3,1,1,1,1,3,1,1,1],
-         [1,1,1,1,1,1,3,1,1,1,1,3,1,1,1],
+         [1,1,1,3,1,1,3,1,1,1,1,3,1,1,1],
+         [2,2,2,5,2,2,5,2,2,2,2,5,2,2,2],
+         [1,1,1,3,1,1,3,1,1,1,1,3,1,1,1],
+         [2,2,2,5,2,2,5,2,2,2,2,5,2,2,2],
+         [1,1,1,3,1,1,3,1,1,1,1,3,1,1,1],
+         [1,1,1,3,1,1,3,1,1,1,1,3,1,1,1],
+         [2,2,2,5,2,2,5,2,2,2,2,5,2,2,2],
+         [1,1,1,3,1,1,3,1,1,1,1,3,1,1,1],
+         [2,2,2,5,2,2,5,2,2,2,2,5,2,2,2],
+         [1,1,1,3,1,1,3,1,1,1,1,3,1,1,1],
          
         ]
 var trotoire;
@@ -68,6 +68,14 @@ var taxi={
     directionx:-100-Math.floor(Math.random() * 200),
     valeur:null
 }
+var viper={
+    objet:null,
+    positionX:44+12*64,
+    positionY:20+8*64,
+    directiony:0,
+    directionx:-100-Math.floor(Math.random() * 200),
+    valeur:null
+}
 var truck={
     objet:null,
     positionX:64+6*128,
@@ -76,14 +84,16 @@ var truck={
     directionx:-100+-Math.floor(Math.random() * 300),
     valeur:null
 }
+var audi={
+    objet:null,
+    positionX:44+3*64,
+    positionY:32+5*64,
+    directiony:-100-Math.floor(Math.random() * 200),
+    directionx:0,
+    valeur:null
+}
 var intersection=[
-    [],
-    [],
-    [],
-    [],
-    [],
-    [],
-    []
+    
 ]
 var feu=[];
 function preload ()
@@ -96,8 +106,10 @@ function preload ()
     this.load.image('virageGB', 'assets\\virageGB.jpg'); 
     this.load.image('virageDB', 'assets\\virageDB.jpg'); 
     this.load.image("car","assets\\car.png")
+    this.load.image("viper","assets\\viper.png")
     this.load.image("truck","assets\\truck.png")
     this.load.image("taxi","assets\\taxi.png")
+    this.load.image("audi","assets\\Audi.png")
     this.load.image("croisement4","assets\\croisement4.jpg")
     this.load.image("croisement3bas","assets\\croisement3bas.jpg")
     this.load.spritesheet("ambulance","assets\\ambulance.png",{ frameWidth: 24, frameHeight: 24 });
@@ -128,6 +140,7 @@ function create ()
                     case 3:routeH.create(32+j*64,32+ i*64, 'routeV'); break              
                     case 5:
                         croisement4.create(32+j*64,32+ i*64, 'croisement4'); 
+                        intersection.push([])
                         feu.push({
                                   i:i+1,
                                   j:j+1,
@@ -150,6 +163,12 @@ function create ()
         car.objet= this.physics.add.sprite(car.positionX, car.positionY, 'car');
         car.objet.body.allowRotation = true;
         
+        audi.objet= this.physics.add.sprite(audi.positionX, audi.positionY, 'audi');
+        audi.objet.body.allowRotation = true;
+        audi.objet.setVelocity(audi.directionx,audi.directiony)
+        viper.objet= this.physics.add.sprite(viper.positionX, viper.positionY, 'viper');
+        viper.objet.body.allowRotation = true;
+        viper.objet.setVelocity(viper.directionx,viper.directiony)
         truck.objet=this.physics.add.sprite(truck.positionX,truck.positionY,"truck")
         truck.objet.allowRotation=true
         truck.objet.angle=0
@@ -235,7 +254,23 @@ function create ()
         }, null, this);  
         this.physics.add.overlap(police.objet,truck.objet, function(){
             this.physics.pause();
-        }, null, this);  
+        }, null, this); 
+        this.physics.add.overlap(audi.objet,truck.objet, function(){
+            this.physics.pause();
+        }, null, this);   
+        this.physics.add.overlap(audi.objet,police.objet, function(){
+            this.physics.pause();
+        }, null, this);   
+        this.physics.add.overlap(audi.objet,ambulance.objet, function(){
+            this.physics.pause();
+        }, null, this);   
+        this.physics.add.overlap(audi.objet,car.objet, function(){
+            this.physics.pause();
+        }, null, this);   
+          
+        this.physics.add.overlap(audi.objet,taxi.objet, function(){
+            this.physics.pause();
+        }, null, this);   
 
         
 
@@ -336,13 +371,25 @@ if(ambulance.objet.body.checkWorldBounds()){
                 taxi.objet.setVelocity(taxi.directionx,taxi.directiony)
                 taxi.objet.angle+=180
                 }
+                if(audi.objet.body.checkWorldBounds()){
+                   
+                    audi.directiony=-audi.directiony
+                    audi.objet.setVelocity(audi.directionx,audi.directiony)
+                    audi.objet.angle+=180
+                    }
+                    if(viper.objet.body.checkWorldBounds()){
+                        console.log("oui")
+                        viper.directionx=-viper.directionx
+                        viper.objet.setVelocity(viper.directionx,viper.directiony)
+                        viper.objet.angle+=180
+                        }
    
 }
  {
     intersectionF(car,croisement4,this)
-
     libererintersectoin(car,routeH,this)
- 
+    intersectionF(audi,croisement4,this)
+    libererintersectoin(audi,routeH,this)
     intersectionF(taxi,croisement4,this)
     intersectionF(police,croisement4,this)
     libererintersectoin(taxi,routeH,this)
@@ -351,5 +398,7 @@ if(ambulance.objet.body.checkWorldBounds()){
     intersectionF(truck,croisement4,this)
     libererintersectoin(ambulance,routeH,this)
     libererintersectoin(truck,routeH,this)
+    intersectionF(viper,croisement4,this)
+    libererintersectoin(viper,routeH,this)
  }
 }
