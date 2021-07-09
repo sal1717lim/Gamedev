@@ -85,8 +85,9 @@ var intersection=[
     [],
     []
 ]
+var feu=[];
 function preload ()
-{   
+{   this.load.spritesheet("feu","assets\\feu.png",{ frameWidth:27, frameHeight: 64})
     this.load.image('trotoire', 'assets\\trotoire.jpg'); 
     this.load.image('routeH', 'assets\\routeH.jpg'); 
     this.load.image('routeV', 'assets\\routeV.jpg'); 
@@ -125,19 +126,33 @@ function create ()
                     case 1:trotoire.create(32+j*64,32+ i*64, 'trotoire'); break
                     case 2:routeH.create(32+j*64,32+ i*64, 'routeH'); break
                     case 3:routeH.create(32+j*64,32+ i*64, 'routeV'); break              
-                    case 5:croisement4.create(32+j*64,32+ i*64, 'croisement4'); break
+                    case 5:
+                        croisement4.create(32+j*64,32+ i*64, 'croisement4'); 
+                        feu.push({
+                                  i:i+1,
+                                  j:j+1,
+                                  objet:null
+                                 }
+                            
+                            )
+                       
+                        break
 
                 }
                 
                
             }
         }
+        for(k in feu){
+            feu[k].objet=this.physics.add.sprite((feu[k].j)*64, (feu[k].i)*64, 'feu')
+            console.log(feu[k].i,feu[k].j)
+        }
         car.objet= this.physics.add.sprite(car.positionX, car.positionY, 'car');
         car.objet.body.allowRotation = true;
         
         truck.objet=this.physics.add.sprite(truck.positionX,truck.positionY,"truck")
         truck.objet.allowRotation=true
-        truck.objet.angle=-90
+        truck.objet.angle=0
         truck.objet.setVelocity(truck.directionx,truck.directiony)
         taxi.objet=this.physics.add.sprite(taxi.positionX,taxi.positionY,"taxi")
         taxi.objet.allowRotation=true
@@ -149,7 +164,16 @@ function create ()
         ambulance.objet=this.physics.add.sprite(ambulance.positionX,ambulance.positionY,"ambulance")
         ambulance.objet.body.allowRotation = true;
         ambulance.objet.setVelocity(ambulance.directionx,ambulance.directiony)
-
+        this.anims.create({
+            key: 'feurouge',
+            frames: [ { key: 'feu', frame: 3 } ],
+            frameRate: 20
+                          });
+        this.anims.create({
+           key: 'feuvert',
+           frames: [ { key: 'feu', frame: 0 } ],
+           frameRate: 20
+         });
         this.anims.create({
 			//on lui donne comme nom (key)
                 key: 'ambulance',
@@ -228,7 +252,7 @@ function intersectionF(sprite,croisement,world){
             if(intersection[element].length!=0){
                 
                 if(!intersection[element].includes(sprite)){
-                    
+                    feu[element].objet.anims.play('feurouge');
                     sprite.objet.setVelocity(0,0)
                     intersection[element].push(sprite)
                   
@@ -268,7 +292,7 @@ function libererintersectoin(sprite,route,world){
             });
                if(intersection[sprite.valeur].length!=0){
                    console.log(intersection)
-                
+                   feu[sprite.valeur].objet.anims.play('feuvert');
                 var x=intersection[sprite.valeur].shift()
                 x.objet.setVelocity(x.directionx,x.directiony)
             }
