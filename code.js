@@ -43,46 +43,48 @@ var car={
     directionx:-100-Math.floor(Math.random() * 200),
     valeur:null
 };
-var car2={
-    objet:null,
-    positionX:20+6*64,
-    positionY:32,
-    directiony:100+Math.floor(Math.random() * 300),
-    directionx:0,
-    valeur:null
-};
+
 var ambulance={
     objet:null,
     positionX:44+6*64,
     positionY:32+9*64,
-    directiony:-10+-Math.floor(Math.random() * 300),
+    directiony:-100-Math.floor(Math.random() * 200),
     directionx:0,
     valeur:null
 }
 var police={
     objet:null,
     positionX:44+11*64,
-    positionY:32+9*64,
-    directiony:-100+-Math.floor(Math.random() * 300),
+    positionY:32+5*64,
+    directiony:-100-Math.floor(Math.random() * 200),
     directionx:0,
     valeur:null
 }
 var taxi={
     objet:null,
-    positionX:44+11*64,
+    positionX:44+12*64,
     positionY:44+6*64,
     directiony:0,
-    directionx:-100+-Math.floor(Math.random() * 300),
+    directionx:-100-Math.floor(Math.random() * 200),
     valeur:null
 }
 var truck={
     objet:null,
-    positionX:64+5*128,
+    positionX:64+6*128,
     positionY: 20+64*3,
     directiony:0,
-    directionx:-10+-Math.floor(Math.random() * 300),
+    directionx:-100+-Math.floor(Math.random() * 300),
     valeur:null
 }
+var intersection=[
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    []
+]
 function preload ()
 {   
     this.load.image('trotoire', 'assets\\trotoire.jpg'); 
@@ -101,7 +103,7 @@ function preload ()
     this.load.spritesheet("police","assets\\police.png",{ frameWidth:16, frameHeight: 35 });
 }
 function create ()
-{   
+{   this.physics.world.setBoundsCollision(true, true, true, true);
     {/*CREATION DES SPRITE ET DES TILES*/
 
 
@@ -132,8 +134,7 @@ function create ()
         }
         car.objet= this.physics.add.sprite(car.positionX, car.positionY, 'car');
         car.objet.body.allowRotation = true;
-        car2.objet= this.physics.add.sprite(car2.positionX, car2.positionY, 'car');
-        car2.objet.body.allowRotation = true;
+        
         truck.objet=this.physics.add.sprite(truck.positionX,truck.positionY,"truck")
         truck.objet.allowRotation=true
         truck.objet.angle=-90
@@ -167,8 +168,8 @@ function create ()
         
         car.objet.setVelocity(car.directionx,car.directiony)
          
-        car2.objet.setVelocity(car2.directionx,car2.directiony)
-        car2.objet.angle=90
+       
+  
        
         console.log("fin du dessin de la map")
        
@@ -178,10 +179,8 @@ function create ()
     
     
     }
-    {/* verification du recouvrement*/
-        this.physics.add.overlap(car.objet, car2.objet, function(){
-            this.physics.pause();
-        }, null, this);  
+    {/* verification du recouvrement des voiture*/
+       
         this.physics.add.overlap(car.objet, ambulance.objet, function(){
             this.physics.pause();
         }, null, this);  
@@ -194,18 +193,7 @@ function create ()
         this.physics.add.overlap(car.objet, truck.objet, function(){
             this.physics.pause();
         }, null, this);  
-        this.physics.add.overlap(car2.objet, ambulance.objet, function(){
-            this.physics.pause();
-        }, null, this);  
-        this.physics.add.overlap(car2.objet,taxi.objet, function(){
-            this.physics.pause();
-        }, null, this);  
-        this.physics.add.overlap(car2.objet, police.objet, function(){
-            this.physics.pause();
-        }, null, this);  
-        this.physics.add.overlap(car2.objet, truck.objet, function(){
-            this.physics.pause();
-        }, null, this);
+       
         this.physics.add.overlap(ambulance.objet,taxi.objet, function(){
             this.physics.pause();
         }, null, this);  
@@ -226,22 +214,83 @@ function create ()
         }, null, this);  
 
         
+
+
+    }
+    
+    
 }
+function intersectionF(sprite,croisement,world){
+ 
+    for (element in croisement.children.entries){
+        if(Phaser.Geom.Rectangle.Overlaps(sprite.objet.getBounds(),croisement.children.entries[element].getBounds() ))
+        {
+            if(intersection[element].length!=0){
+                
+                if(!intersection[element].includes(sprite)){
+                    
+                    sprite.objet.setVelocity(0,0)
+                    intersection[element].push(sprite)
+                  
+                }
+            }else{
+               
+                intersection[element].push(sprite)
+                sprite.valeur=element
+                
+                //sprite.objet.setVelocity(sprite.objet.directionx,sprite.objet.directiony)
+            }
+        }
+        
+    }
+
+}
+function libererintersectoin(sprite,route,world){
+   
+    if(sprite.valeur!=null)
+    for (element in route.children.entries){
+        if(Phaser.Geom.Rectangle.Overlaps(sprite.objet.getBounds(),route.children.entries[element].getBounds() ))
+        { var liberer=false
+            for(croisement in croisement4.children.entries){
+                if(Phaser.Geom.Rectangle.Overlaps(sprite.objet.getBounds(),croisement4.children.entries[croisement].getBounds() )){
+                    liberer=true
+                    break
+                }
+            }
+            
+            if((intersection[sprite.valeur].length!=0) & !liberer){
+
+        
+            if(intersection[sprite.valeur].includes(sprite)){
+               
+               intersection[sprite.valeur]=intersection[sprite.valeur].filter(function(value, index, arr){ 
+                return value !=sprite;
+            });
+               if(intersection[sprite.valeur].length!=0){
+                   console.log(intersection)
+                
+                var x=intersection[sprite.valeur].shift()
+                x.objet.setVelocity(x.directionx,x.directiony)
+            }
+
+            }
+        }
+        }
+        
+    }
 }
 function update ()
 {  ambulance.objet.anims.play('ambulance', true);
     police.objet.anims.play('police', true);
-    
-    if(car.objet.body.checkWorldBounds()){
+    car.objet.body.onWorldBounds=true
+{//world bounds
+    if(car.objet.body.checkWorldBounds() ){
+
 car.directionx=-car.directionx
 car.objet.setVelocity(car.directionx,car.directiony)
 car.objet.angle=180
 }
-if(car2.objet.body.checkWorldBounds()){
-    car2.directiony=-car2.directiony
-    car2.objet.setVelocity(car2.directionx,car2.directiony)
-    car2.objet.angle=90
-    }
+
 if(ambulance.objet.body.checkWorldBounds()){
     ambulance.directiony=-ambulance.directiony
     ambulance.objet.setVelocity(ambulance.directionx,ambulance.directiony)
@@ -264,4 +313,19 @@ if(ambulance.objet.body.checkWorldBounds()){
                 taxi.objet.angle+=180
                 }
    
+}
+ {
+    intersectionF(car,croisement4,this)
+
+    libererintersectoin(car,routeH,this)
+ 
+    intersectionF(taxi,croisement4,this)
+    intersectionF(police,croisement4,this)
+    libererintersectoin(taxi,routeH,this)
+    libererintersectoin(police,routeH,this)
+    intersectionF(ambulance,croisement4,this)
+    intersectionF(truck,croisement4,this)
+    libererintersectoin(ambulance,routeH,this)
+    libererintersectoin(truck,routeH,this)
+ }
 }
