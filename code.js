@@ -6,7 +6,7 @@ var config = {
         default: 'arcade',
         arcade: {
             
-            debug: true
+            debug: false
         }
     },
     scene: {
@@ -18,16 +18,17 @@ var config = {
 
 var game = new Phaser.Game(config);
 console.log(game)
+var etatpassage=[]
 var map=[
+         [1,1,1,6,1,1,6,1,1,1,1,6,1,1,1],
+         [2,7,2,5,2,7,5,2,2,7,2,5,2,7,2],
          [1,1,1,3,1,1,3,1,1,1,1,3,1,1,1],
-         [2,2,2,5,2,2,5,2,2,2,2,5,2,2,2],
+         [2,7,2,5,7,2,5,2,7,2,2,5,2,2,2],
          [1,1,1,3,1,1,3,1,1,1,1,3,1,1,1],
-         [2,2,2,5,2,2,5,2,2,2,2,5,2,2,2],
+         [1,1,1,3,1,1,3,1,1,1,1,6,1,1,1],
+         [2,7,2,5,2,7,5,2,2,2,2,5,2,7,7],
          [1,1,1,3,1,1,3,1,1,1,1,3,1,1,1],
-         [1,1,1,3,1,1,3,1,1,1,1,3,1,1,1],
-         [2,2,2,5,2,2,5,2,2,2,2,5,2,2,2],
-         [1,1,1,3,1,1,3,1,1,1,1,3,1,1,1],
-         [2,2,2,5,2,2,5,2,2,2,2,5,2,2,2],
+         [2,7,2,5,7,2,5,2,2,7,2,5,7,2,2],
          [1,1,1,3,1,1,3,1,1,1,1,3,1,1,1],
          
         ]
@@ -36,6 +37,7 @@ var routeH;
 
 var croisement4;
 var cursor;
+var passage;
 var car={
     objet:null,
     positionX:64+6*128,
@@ -98,9 +100,8 @@ var audi={
     directionx:0,
     valeur:null
 }
-var intersection=[
-    
-]
+var gameover=false;
+var intersection=[]
 var feu=[];
 function preload ()
 {   this.load.spritesheet("feu","assets\\feu.png",{ frameWidth:27, frameHeight: 64})
@@ -112,6 +113,8 @@ function preload ()
     this.load.image('virageGB', 'assets\\virageGB.jpg'); 
     this.load.image('virageDB', 'assets\\virageDB.jpg'); 
     this.load.image("car","assets\\car.png")
+    this.load.image("passageV",'assets\\passageV.jpg')
+    this.load.image("passageH",'assets\\passageH.jpg')
     this.load.image("viper","assets\\viper.png")
     this.load.image("truck","assets\\truck.png")
     this.load.image("taxi","assets\\taxi.png")
@@ -134,7 +137,7 @@ function create ()
     routeH=this.physics.add.staticGroup();
 
     croisement4=this.physics.add.staticGroup();
-   
+    passage=this.physics.add.staticGroup();
      {//dessin de la map
 
         console.log("creation de la map")
@@ -145,8 +148,7 @@ function create ()
                     case 1:trotoire.create(32+j*64,32+ i*64, 'trotoire'); break
                     case 2:routeH.create(32+j*64,32+ i*64, 'routeH'); break
                     case 3:routeH.create(32+j*64,32+ i*64, 'routeV'); break              
-                    case 5:
-                        croisement4.create(32+j*64,32+ i*64, 'croisement4'); 
+                    case 5:croisement4.create(32+j*64,32+ i*64, 'croisement4'); 
                         intersection.push([])
                         feu.push({
                                   i:i+1,
@@ -154,9 +156,10 @@ function create ()
                                   objet:null
                                  }
                             
-                            )
-                       
+                            )                  
                         break
+                    case 6:passage.create(32+j*64,32+ i*64, 'passageV'); break 
+                    case 7:passage.create(32+j*64,32+ i*64, 'passageH'); break 
 
                 }
                 
@@ -214,6 +217,7 @@ function create ()
              frameRate: 5,
            repeat: -1
              });
+             
         window.alert("cliquer sur ok pour commencer le jeu")
         
         car.objet.setVelocity(car.directionx,car.directiony)
@@ -310,6 +314,7 @@ repeat: -1
 });
 cursor = this.input.keyboard.createCursorKeys();
 player.objet.anims.play('player', true);
+this.physics.add.collider(player.objet, routeH);
 
     }
     this.anims.create({
@@ -319,7 +324,56 @@ player.objet.anims.play('player', true);
     frameRate: 15,
     repeat: -1
     });
+    this.anims.create({
+        //on lui donne comme nom (key)
+    key: 'death',
+    frames: this.anims.generateFrameNumbers('player', { start:0, end: 14 }),
+    frameRate: 15,
+    repeat: 0
+    });
     player.objet.setCollideWorldBounds(true);
+    player.objet.body.setSize(20,38,true)
+    {
+        this.physics.add.collider(player.objet, car.objet,  function(){
+            player.objet.anims.play("death",true)
+            this.physics.pause();
+            gameover=true
+        },null ,this);
+        this.physics.add.collider(player.objet, ambulance.objet,  function(){
+            player.objet.anims.play("death",true)
+            this.physics.pause();
+            gameover=true
+        },null ,this);
+        this.physics.add.collider(player.objet, truck.objet,  function(){
+            player.objet.anims.play("death",true)
+            this.physics.pause();
+            gameover=true
+        },null ,this);
+        this.physics.add.collider(player.objet, taxi.objet,  function(){
+            player.objet.anims.play("death",true)
+            this.physics.pause();
+            gameover=true
+        },null ,this);
+        this.physics.add.collider(player.objet, viper.objet,  function(){
+            player.objet.anims.play("death",true)
+            this.physics.pause();
+            gameover=true
+        },null ,this);
+        this.physics.add.collider(player.objet, police.objet,  function(){
+            player.objet.anims.play("death",true)
+            this.physics.pause();
+            gameover=true
+        },null ,this);
+        this.physics.add.collider(player.objet, audi.objet,  function(){
+            player.objet.anims.play("death",true)
+            this.physics.pause();
+            gameover=true
+        },null ,this);
+    }
+  
+}
+function arretegame(){
+
 }
 function intersectionF(sprite,croisement,world){
  
@@ -382,19 +436,20 @@ function libererintersectoin(sprite,route,world){
 }
 function update ()
 {  
+  if(!gameover)  {
     {
     if (cursor.left.isDown)
     { 
         if(player.objet.x>0){
             if(cursor.space.isDown){
                 player.objet.setVelocityX(-player.superspeed);  
-                player.objet.anims.play('right', true);               
-                //player.objet.scaleX=-1
+                player.objet.anims.play('courir', true);               
+                player.objet.scaleX=-1
             }else{
                 player.objet.setVelocityX(-player.vitesse);         
                 player.objet.anims.play('right', true);       
                 player.objet.scaleX=-1
-                console.log(player.objet)
+                
             }
 
         }else{
@@ -507,4 +562,5 @@ if(ambulance.objet.body.checkWorldBounds()){
     intersectionF(viper,croisement4,this)
     libererintersectoin(viper,routeH,this)
  }
+}
 }
