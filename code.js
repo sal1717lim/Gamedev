@@ -15,7 +15,8 @@ var config = {
         update: update
     }
 };
-
+var score=0;
+var scoreText;
 var game = new Phaser.Game(config);
 console.log(game)
 var etatpassage=[]
@@ -124,9 +125,13 @@ function preload ()
     this.load.spritesheet("ambulance","assets\\ambulance.png",{ frameWidth: 24, frameHeight: 24 });
     this.load.spritesheet("police","assets\\police.png",{ frameWidth:16, frameHeight: 35 });
     this.load.spritesheet("player","assets\\spritesheet.png",{ frameWidth:52, frameHeight: 48 });
+    this.load.audio('klaxon', 'assets/klaxon.mp3');
 }
 function create ()
-{   this.physics.world.setBoundsCollision(true, true, true, true);
+
+{   
+    this.sound.add('klaxon');
+    this.physics.world.setBoundsCollision(true, true, true, true);
     {/*CREATION DES SPRITE ET DES TILES*/
 
 
@@ -142,7 +147,7 @@ function create ()
 
         console.log("creation de la map")
         for (var i=0;i<10;i++){
-            for (var j=0;j<15;j++){
+            for (var j=0;j<14;j++){
                 
                 switch(map[i][j]){
                     case 1:trotoire.create(32+j*64,32+ i*64, 'trotoire'); break
@@ -158,8 +163,9 @@ function create ()
                             
                             )                  
                         break
-                    case 6:passage.create(32+j*64,32+ i*64, 'passageV'); break 
-                    case 7:passage.create(32+j*64,32+ i*64, 'passageH'); break 
+                    case 6:passage.create(32+j*64,32+ i*64, 'passageV');
+                            etatpassage.push(true) ;break
+                    case 7:passage.create(32+j*64,32+ i*64, 'passageH');etatpassage.push(true) ; break 
 
                 }
                 
@@ -315,9 +321,7 @@ repeat: -1
 cursor = this.input.keyboard.createCursorKeys();
 player.objet.anims.play('player', true);
 this.physics.add.collider(player.objet, routeH);
-
-    }
-    this.anims.create({
+  this.anims.create({
         //on lui donne comme nom (key)
     key: 'courir',
     frames: this.anims.generateFrameNumbers('player', { start:31, end: 44 }),
@@ -370,10 +374,23 @@ this.physics.add.collider(player.objet, routeH);
             gameover=true
         },null ,this);
     }
+    }
+scoreText = this.add.text(780, 16, 'score: 0', { fontSize: '20px', fill: '#0000EE' });   
   
 }
-function arretegame(){
 
+function passageP(){
+    for (element in passage.children.entries){
+        if(Phaser.Geom.Rectangle.Overlaps(player.objet.getBounds(),passage.children.entries[element].getBounds() ))
+        {
+            if(etatpassage[element]){
+                passage.children.entries[element].setTint(0x7CFC00)
+                etatpassage[element]=false;
+                score=score+5
+                scoreText.setText('Score: ' + score); 
+            }
+        }
+    }
 }
 function intersectionF(sprite,croisement,world){
  
@@ -384,6 +401,7 @@ function intersectionF(sprite,croisement,world){
                 
                 if(!intersection[element].includes(sprite)){
                     feu[element].objet.anims.play('feurouge');
+                   // world.sound.play('klaxon'); le klaxon est en commentaire car il fesait trop de bruit 
                     sprite.objet.setVelocity(0,0)
                     intersection[element].push(sprite)
                   
@@ -435,7 +453,7 @@ function libererintersectoin(sprite,route,world){
     }
 }
 function update ()
-{  
+{  passageP()
   if(!gameover)  {
     {
     if (cursor.left.isDown)
