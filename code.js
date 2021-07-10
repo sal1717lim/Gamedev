@@ -21,18 +21,18 @@ var game = new Phaser.Game(config);
 console.log(game)
 var etatpassage=[]
 var map=[
-         [1,1,1,6,1,1,6,1,1,1,1,6,1,1,1],
-         [2,7,2,5,2,7,5,2,2,7,2,5,2,7,2],
-         [1,1,1,3,1,1,3,1,1,1,1,3,1,1,1],
-         [2,7,2,5,7,2,5,2,7,2,2,5,2,2,2],
-         [1,1,1,3,1,1,3,1,1,1,1,3,1,1,1],
-         [1,1,1,3,1,1,3,1,1,1,1,6,1,1,1],
-         [2,7,2,5,2,7,5,2,2,2,2,5,2,7,7],
-         [1,1,1,3,1,1,3,1,1,1,1,3,1,1,1],
-         [2,7,2,5,7,2,5,2,2,7,2,5,7,2,2],
-         [1,1,1,3,1,1,3,1,1,1,1,3,1,1,1],
-         
-        ]
+    [14, 17, 15,  6,  16,  15, 6,  16,  14,  14, 15, 3,  16,  14, 14],
+    [2,  7,  2,   5,  2,   7,  5,  2,   2,   7,  2,  5,  2,   7,  2 ],
+    [14, 14, 15,  3,  16,  15, 3,  16,  20,  14, 15, 3,  16,  14, 14],
+    [2,  7,  2,   5,  7,   2,  5,  2,   7,   2,  2,  5,  2,   2,  2 ],
+    [17, 17, 8,   3,  11,  8,  3,  11,  17,   17,  8,  3,  11,  17,  17 ],
+    [18,  19,  12,  3,     13,    12, 3,  13,  18,   18,  12, 6,  13,  18,  18 ],
+    [2,  7,  2,   5,  2,   7,  5,  2,   2,   2,  2,  5,  2,   7,  7 ],
+    [14, 14, 15,  3,  16,  15, 3,  16,  14,  20, 15, 3,  16,  14, 14],
+    [2,  7,  2,   5,  7,   2,  5,  2,   2,   7,  2,  5,  7,   2,   2],
+    [14, 14, 15,  3,  16,  15, 3,  16,  14,  14, 15, 3,  16,  14, 14],
+    
+   ]
 var trotoire;
 var routeH;
 
@@ -105,7 +105,22 @@ var gameover=false;
 var intersection=[]
 var feu=[];
 function preload ()
-{   this.load.spritesheet("feu","assets\\feu.png",{ frameWidth:27, frameHeight: 64})
+
+{   this.load.image('trotoireH', 'assets\\trotoireH.png');
+    this.load.image('trotoireB', 'assets\\trotoireB.png');
+    this.load.image('trotoireG', 'assets\\trotoireG.png');
+    this.load.image('trotoireD', 'assets\\trotoireD.png');
+    this.load.image('trotoireD1', 'assets\\trotoireD1.png');
+    this.load.image('trotoireA', 'assets\\trotoireA.png');
+    this.load.image('trotoireA2', 'assets\\trotoireA2.png');
+    this.load.image('trotoireG2', 'assets\\trotoireG2.png');
+    this.load.image('trotoireM', 'assets\\trotoireM.png');
+    this.load.image('trotoireC1', 'assets\\trotoireC1.png');
+    this.load.image('trotoireC2', 'assets\\trotoireC2.png');
+    this.load.image('maison1', 'assets\\maison1.png');
+    this.load.image('maison2', 'assets\\maison2.png');
+    
+    this.load.spritesheet("feu","assets\\feu.png",{ frameWidth:27, frameHeight: 64})
     this.load.image('trotoire', 'assets\\trotoire.jpg'); 
     this.load.image('routeH', 'assets\\routeH.jpg'); 
     this.load.image('routeV', 'assets\\routeV.jpg'); 
@@ -138,8 +153,23 @@ function create ()
 
     
     trotoire=this.physics.add.staticGroup();
-    
+    trotoireH=this.physics.add.staticGroup();
+    trotoireB=this.physics.add.staticGroup();
+    trotoireG=this.physics.add.staticGroup();
+    trotoireD=this.physics.add.staticGroup();
+    trotoireD1=this.physics.add.staticGroup();
+    trotoireA=this.physics.add.staticGroup();
+    trotoireA2=this.physics.add.staticGroup();
+    trotoireG2=this.physics.add.staticGroup();
+    trotoireM=this.physics.add.staticGroup();
+    trotoireC1=this.physics.add.staticGroup();
+    trotoireC2=this.physics.add.staticGroup();
+
+    maison2=this.physics.add.staticGroup();
+    maison1=this.physics.add.staticGroup();
+
     routeH=this.physics.add.staticGroup();
+
 
     croisement4=this.physics.add.staticGroup();
     passage=this.physics.add.staticGroup();
@@ -164,8 +194,19 @@ function create ()
                             )                  
                         break
                     case 6:passage.create(32+j*64,32+ i*64, 'passageV');
-                            etatpassage.push(true) ;break
+                        etatpassage.push(true) ;break
                     case 7:passage.create(32+j*64,32+ i*64, 'passageH');etatpassage.push(true) ; break 
+                    case 8:trotoireG.create(32+j*64,32+ i*64, 'trotoireG'); break
+                    case 11:trotoireD.create(32+j*64,32+ i*64, 'trotoireD'); break
+                    case 12:trotoireG2.create(32+j*64,32+ i*64, 'trotoireG2'); break
+                    case 13:trotoireD1.create(32+j*64,32+ i*64, 'trotoireD1'); break
+                    case 14:trotoireM.create(32+j*64,32+ i*64, 'trotoireM'); break
+                    case 15:trotoireC1.create(32+j*64,32+ i*64, 'trotoireC1'); break
+                    case 16:trotoireC2.create(32+j*64,32+ i*64, 'trotoireC2'); break
+                    case 17:trotoireH.create(32+j*64,32+ i*64, 'trotoireH'); break
+                    case 18:trotoireB.create(32+j*64,32+ i*64, 'trotoireB'); break
+                    case 19:maison1.create(32+j*64,32+ i*64, 'maison1'); break
+                    case 20:maison2.create(32+j*64,32+ i*64, 'maison2'); break
 
                 }
                 
